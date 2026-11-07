@@ -1,0 +1,45 @@
+[project]
+name = "autoapply-ai"
+version = "0.0.1"
+description = "Local-first job application assistant. The LLM is an untrusted parser and drafter; deterministic code drives the browser."
+readme = "README.md"
+requires-python = ">=3.12"
+authors = [{ name = "AutoApply AI contributors" }]
+dependencies = [
+    "httpx>=0.27",
+    "pydantic>=2.7",
+    "playwright>=1.47",
+    "pypdf>=5.0",
+    "python-docx>=1.1",
+    "sqlalchemy>=2.0",
+    "keyring>=25.0",
+    "pyside6>=6.7",
+]
+
+[project.scripts]
+autoapply = "autoapply.cli:main"
+
+[dependency-groups]
+dev = [
+    "pytest>=8",
+    "pytest-asyncio>=0.24",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/autoapply"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+testpaths = ["tests"]
+pythonpath = ["src", "."]
+markers = [
+    "live: talks to a local Ollama server (skipped unless AUTOAPPLY_LIVE=1)",
+]
+
+[tool.uv]
+package = true

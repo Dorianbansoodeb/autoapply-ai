@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Inner form</title></head>
+<body>
+  <form id="form" action="/confirmation.html">
+    <label for="name">Full name</label>
+    <input id="name" name="name">
+    <label for="email">Email</label>
+    <input id="email" name="email" type="email">
+    <label for="work_auth">Work authorization</label>
+    <select id="work_auth">
+      <option value="">Select…</option>
+      <option value="yes">Authorized to work</option>
+      <option value="no">Not authorized</option>
+    </select>
+    <label for="resume">Resume</label>
+    <input id="resume" type="file">
+    <label for="cover">Why do you want this role?</label>
+    <textarea id="cover"></textarea>
+    <button type="submit">Submit application</button>
+  </form>
+</body></html>

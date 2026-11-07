@@ -1,0 +1,32 @@
+{
+  "full_name": "Ada Lovelace",
+  "email": "ada@example.com",
+  "work_authorization": "authorized",
+  "resume_path": null,
+  "facts": [
+    {
+      "id": "exp_001",
+      "type": "experience_bullet",
+      "employer": "Analytical Engine Co",
+      "title": "Mathematician",
+      "start": "1842-01",
+      "end": "1843-12",
+      "text": "Wrote the first algorithm intended to be executed by a machine, using the Analytical Engine.",
+      "technologies": ["Analytical Engine"],
+      "metrics": [],
+      "verified": true
+    },
+    {
+      "id": "skill_001",
+      "type": "skill",
+      "text": "Mathematics, algorithms, and technical writing.",
+      "employer": null,
+      "title": null,
+      "start": null,
+      "end": null,
+      "technologies": ["mathematics"],
+      "metrics": [],
+      "verified": true
+    }
+  ]
+}

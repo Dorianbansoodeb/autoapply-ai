@@ -1,0 +1,4 @@
+Ada Lovelace
+Mathematician
+
+Wrote the first algorithm intended to be executed by a machine, using the Analytical Engine.

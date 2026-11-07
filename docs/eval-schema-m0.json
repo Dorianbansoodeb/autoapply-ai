@@ -1,0 +1,8 @@
+{
+  "model": "phi3.5:3.8b",
+  "n": 50,
+  "valid": 50,
+  "valid_rate": 1.0,
+  "seconds": 476.3,
+  "notes": "Schema-validity only. Content quality is out of scope for M0; several answers ignored cited facts or role-played as an AI. One prompt took 275s before completing. max_tokens=512 was added to the client after this run to bound runaway generation."
+}

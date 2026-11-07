@@ -1,0 +1,10 @@
+Ada Lovelace
+ada@example.com
+London
+
+Mathematician, Analytical Engine Co, 1842–1843
+
+Wrote the first algorithm intended to be executed by a machine, using the Analytical Engine.
+Translated and annotated Menabrea's paper on the Analytical Engine, expanding it with notes.
+
+Skills: mathematics, algorithms, technical writing.

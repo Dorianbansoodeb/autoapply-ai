@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Validation apply</title></head>
+<body>
+  <form id="form">
+    <div id="error" role="alert" hidden>Email is required</div>
+    <label for="name">Full name</label>
+    <input id="name" name="name">
+    <label for="email">Email</label>
+    <input id="email" name="email" type="email">
+    <label for="work_auth">Work authorization</label>
+    <select id="work_auth">
+      <option value="">Select…</option>
+      <option value="yes">Authorized to work</option>
+      <option value="no">Not authorized</option>
+    </select>
+    <label for="resume">Resume</label>
+    <input id="resume" type="file">
+    <label for="cover">Why do you want this role?</label>
+    <textarea id="cover"></textarea>
+    <label><input id="certify" type="checkbox"> I certify the information is accurate</label>
+    <button type="button" id="next">Next</button>
+    <button type="submit" id="submit" hidden>Submit application</button>
+  </form>
+  <script>
+    document.getElementById('next').onclick = () => {
+      const email = document.getElementById('email').value;
+      const certify = document.getElementById('certify').checked;
+      const error = document.getElementById('error');
+      if (!email || !certify) {
+        error.hidden = false;
+        error.textContent = !email ? 'Email is required' : 'Please certify';
+        return;
+      }
+      error.hidden = true;
+      document.getElementById('next').hidden = true;
+      document.getElementById('submit').hidden = false;
+    };
+    document.getElementById('form').onsubmit = (e) => { e.preventDefault(); location.href = '/confirmation.html'; };
+  </script>
+</body></html>

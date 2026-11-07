@@ -1,0 +1,22 @@
+[
+  {
+    "model": "phi3.5:3.8b",
+    "wall_seconds": 4.46,
+    "prompt_tokens": 70,
+    "eval_tokens": 65,
+    "prompt_tokens_per_sec": 209.6,
+    "eval_tokens_per_sec": 35.04,
+    "ollama_rss_mb": 3689.4,
+    "schema_valid": true
+  },
+  {
+    "model": "qwen2.5:7b-instruct",
+    "wall_seconds": 7.13,
+    "prompt_tokens": 84,
+    "eval_tokens": 83,
+    "prompt_tokens_per_sec": 110.2,
+    "eval_tokens_per_sec": 18.31,
+    "ollama_rss_mb": 4848.5,
+    "schema_valid": true
+  }
+]

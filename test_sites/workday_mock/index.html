@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Workday mock tenant</title>
+<style>body{font-family:sans-serif;max-width:40rem;margin:2rem auto}label,input{display:block;width:100%;margin:0.4rem 0}section{margin-top:1rem}</style>
+</head>
+<body>
+  <h1 data-automation-id="header">Acme Workday Tenant</h1>
+
+  <section id="signup" data-automation-id="signupSection">
+    <h2>Create Account</h2>
+    <label>Email <input data-automation-id="email" id="email" type="email"></label>
+    <label>Password <input data-automation-id="password" id="password" type="password"></label>
+    <p>Check your own email for the verification link. The agent will not read your inbox.</p>
+    <button type="button" data-automation-id="createAccountButton" id="create">Create Account</button>
+  </section>
+
+  <section id="apply" hidden>
+    <div id="step-info">
+      <h2>My Information</h2>
+      <label>Full name <input data-automation-id="legalName" id="name"></label>
+      <label>Email <input data-automation-id="contactEmail" id="contactEmail" type="email"></label>
+      <button type="button" data-automation-id="bottom-navigation-next-button" class="next">Next</button>
+    </div>
+    <div id="step-exp" hidden>
+      <h2>My Experience</h2>
+      <label>Resume <input data-automation-id="resumeUpload" id="resume" type="file"></label>
+      <label>Why do you want this role? <textarea data-automation-id="coverQuestion" id="cover"></textarea></label>
+      <button type="button" data-automation-id="bottom-navigation-next-button" class="next">Next</button>
+    </div>
+    <div id="step-eeo" hidden>
+      <h2>Voluntary Disclosures / Self Identify</h2>
+      <label>Gender <select data-automation-id="gender"><option>Decline to answer</option></select></label>
+      <label>Veteran status <select data-automation-id="veteran"><option>Decline to answer</option></select></label>
+      <label>Disability <select data-automation-id="disability"><option>Decline to answer</option></select></label>
+      <button type="button" data-automation-id="bottom-navigation-next-button" class="next">Next</button>
+    </div>
+    <div id="step-review" hidden>
+      <h2>Review</h2>
+      <p>Please review and submit yourself.</p>
+      <button type="submit" data-automation-id="bottom-navigation-submit-button" id="submit">Submit application</button>
+    </div>
+  </section>
+
+  <p><a href="captcha.html">Human-check page</a> · <a href="assessment.html">Timed exam page</a></p>
+  <script>
+    const steps = ['step-info','step-exp','step-eeo','step-review'];
+    document.getElementById('create').onclick = () => {
+      document.getElementById('signup').hidden = true;
+      document.getElementById('apply').hidden = false;
+    };
+    document.querySelectorAll('.next').forEach(btn => {
+      btn.onclick = () => {
+        const visible = steps.find(id => !document.getElementById(id).hidden);
+        const idx = steps.indexOf(visible);
+        document.getElementById(visible).hidden = true;
+        document.getElementById(steps[Math.min(idx+1, steps.length-1)]).hidden = false;
+      };
+    });
+    document.getElementById('submit').onclick = (e) => { e.preventDefault(); location.href = 'confirmation.html'; };
+    if (location.search.includes('apply')) {
+      document.getElementById('signup').hidden = true;
+      document.getElementById('apply').hidden = false;
+    }
+  </script>
+</body></html>

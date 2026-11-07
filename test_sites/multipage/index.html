@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Multipage apply</title></head>
+<body>
+  <h1>Apply</h1>
+  <form id="form">
+    <section id="step1">
+      <label for="name">Full name</label>
+      <input id="name" name="name" required>
+      <label for="email">Email</label>
+      <input id="email" name="email" type="email" required>
+      <button type="button" id="next">Next</button>
+    </section>
+    <section id="step2" hidden>
+      <label for="work_auth">Work authorization</label>
+      <select id="work_auth" name="work_auth">
+        <option value="">Select…</option>
+        <option value="yes">Authorized to work</option>
+        <option value="no">Not authorized</option>
+      </select>
+      <label for="resume">Resume</label>
+      <input id="resume" name="resume" type="file">
+      <label for="cover">Why do you want this role?</label>
+      <textarea id="cover" name="cover"></textarea>
+      <button type="submit" id="submit">Submit application</button>
+    </section>
+  </form>
+  <script>
+    document.getElementById('next').onclick = () => {
+      document.getElementById('step1').hidden = true;
+      document.getElementById('step2').hidden = false;
+    };
+    document.getElementById('form').onsubmit = (e) => {
+      e.preventDefault();
+      location.href = '/confirmation.html';
+    };
+  </script>
+</body></html>
