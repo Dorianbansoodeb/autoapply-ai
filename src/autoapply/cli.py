@@ -88,6 +88,9 @@ def build_parser() -> argparse.ArgumentParser:
     sub.add_parser("gui", help="Open the desktop UI (PySide6)")
     rec = sub.add_parser("recover", help="Mark crashed submitting runs as uncertain")
     rec.add_argument("--db", type=Path, default=DEFAULT_DB_PATH)
+    from autoapply.product_cli import register
+
+    register(sub)
 
     return parser
 
@@ -132,6 +135,11 @@ def main(argv: list[str] | None = None) -> None:
         flipped = Tracker(args.db).recover()
         print(json.dumps({"uncertain_runs": flipped}))
         return
+    from autoapply.product_cli import dispatch
+
+    handled = dispatch(args)
+    if handled is not None:
+        raise SystemExit(handled)
     parser.error(f"unknown command {args.command}")
 
 
@@ -266,10 +274,18 @@ async def _cmd_docs_build(args: argparse.Namespace) -> int:
     llm = OpenAICompatClient(base_url=args.llm_url, model=args.model)
     try:
         result = await build_documents(profile, job, llm, out_dir=args.out)
+        from autoapply.jobs.eligibility import check_eligibility
+        from autoapply.jobs.fit import explain_fit
+
+        eligibility = check_eligibility(job, profile)
+        fit = await explain_fit(profile=profile, job=job, eligibility=eligibility, llm=llm)
     except Exception as exc:  # noqa: BLE001
         print(f"Document build failed: {exc}", file=sys.stderr)
         return 1
     finally:
         await llm.aclose()
-    print(json.dumps(result.model_dump(), indent=2))
+    payload = result.model_dump()
+    payload["eligibility"] = eligibility.model_dump()
+    payload["fit"] = fit.model_dump()
+    print(json.dumps(payload, indent=2))
     return 0

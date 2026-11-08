@@ -36,6 +36,7 @@ async def fill_application(
     browser: BrowserManager,
     resume_path: Path | None = None,
     cancel: CancelToken | None = None,
+    saved_prefs: dict[str, str] | None = None,
 ) -> FillResult:
     assert_browser_url(url)
     token = cancel or CancelToken()
@@ -52,7 +53,13 @@ async def fill_application(
 
     try:
         await fill_page(
-            page, profile, llm, resume_path=resume_path, token=token, state=state
+            page,
+            profile,
+            llm,
+            resume_path=resume_path,
+            token=token,
+            state=state,
+            saved_prefs=saved_prefs,
         )
         result.filled_fields = state.filled
         result.pending_review = state.pending_review

@@ -30,6 +30,13 @@ _PREFERENCE = re.compile(r"salary|start date|willing to relocate|remote", re.I)
 _EXPERIENCE = re.compile(r"experience|describe a project|resume", re.I)
 
 
+_AMBIGUOUS = re.compile(r"\b(it depends|unclear|ambiguous|not sure how)\b", re.I)
+
+
+def is_ambiguous(label: str) -> bool:
+    return bool(_AMBIGUOUS.search(label or ""))
+
+
 def classify_label(label: str) -> QuestionClass:
     if _SENSITIVE.search(label):
         return QuestionClass.SENSITIVE

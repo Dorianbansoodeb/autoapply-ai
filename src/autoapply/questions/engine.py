@@ -11,7 +11,7 @@ from autoapply.docs.validate import unsupported_bits
 from autoapply.llm.client import LLMClient, wrap_untrusted
 from autoapply.llm.schemas import FreeTextDraft
 from autoapply.profile.models import CandidateProfile, Fact
-from autoapply.questions.classify import QuestionClass, classify_label
+from autoapply.questions.classify import QuestionClass, classify_label, is_ambiguous
 from autoapply.storage.answers import AnswerBank
 
 SYSTEM = (
@@ -84,6 +84,14 @@ async def answer_question(
             answer="Decline to answer",
             needs_review=True,
             reason="sensitive; no explicit saved answer; default decline",
+        )
+    if is_ambiguous(question):
+        return QuestionDecision(
+            question=question,
+            kind=kind,
+            action="ask",
+            needs_review=True,
+            reason="ambiguous; needs a human answer",
         )
     if kind is QuestionClass.PREFERENCE:
         pref = (saved_prefs or {}).get(question)

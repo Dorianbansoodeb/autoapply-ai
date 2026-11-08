@@ -25,8 +25,11 @@ def can_auto_submit(
     captcha_or_wall: bool,
     daily_count: int,
     daily_cap: int = 5,
+    kill_switch: bool = False,
 ) -> SubmitGate:
     reasons: list[str] = []
+    if kill_switch:
+        reasons.append("kill switch is on")
     if policy.mode != "C" or not policy.allow_auto_submit:
         reasons.append("site is not allowlisted for auto-submit (mode B)")
     if not all_required_from_verified:

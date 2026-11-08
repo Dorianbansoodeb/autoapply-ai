@@ -69,6 +69,7 @@ async def fill_page(
     state: FillState,
     max_pages: int = 8,
     bank: AnswerBank | None = None,
+    saved_prefs: dict[str, str] | None = None,
 ) -> None:
     for _ in range(max_pages):
         token.raise_if_cancelled()
@@ -96,13 +97,20 @@ async def fill_page(
             return
         for frame in page.frames:
             await _fill_frame(
-                frame, profile, llm, resume_path, token, state, bank=bank
+                frame, profile, llm, resume_path, token, state, bank=bank, saved_prefs=saved_prefs
             )
         if await _error_visible(page):
             for frame in page.frames:
                 await _fill_frame(
-                frame, profile, llm, resume_path, token, state, bank=bank
-            )
+                    frame,
+                    profile,
+                    llm,
+                    resume_path,
+                    token,
+                    state,
+                    bank=bank,
+                    saved_prefs=saved_prefs,
+                )
         next_btn = page.get_by_role("button", name=NEXT_RE)
         submit = page.get_by_role("button", name=SUBMIT_RE)
         if await next_btn.count() and await next_btn.first.is_visible():
@@ -124,6 +132,7 @@ async def _fill_frame(
     token: CancelToken,
     state: FillState,
     bank: AnswerBank | None = None,
+    saved_prefs: dict[str, str] | None = None,
 ) -> None:
     labels = await _labels(frame)
     for label in labels:
@@ -160,7 +169,9 @@ async def _fill_frame(
             await target.check()
             state.filled.append("certify")
         elif COVER_RE.search(label) or kind == "textarea":
-            await _fill_textarea(target, label, profile, llm, token, state, bank)
+            await _fill_textarea(
+                target, label, profile, llm, token, state, bank, saved_prefs=saved_prefs
+            )
 
 
 async def _fill_choice(frame: Frame, target, label: str, profile: CandidateProfile, state: FillState) -> None:
@@ -183,9 +194,11 @@ async def _fill_choice(frame: Frame, target, label: str, profile: CandidateProfi
         state.notes.append(f"Could not set work authorization: {exc}")
 
 
-async def _fill_textarea(target, label, profile, llm, token, state, bank) -> None:
+async def _fill_textarea(target, label, profile, llm, token, state, bank, saved_prefs=None) -> None:
     try:
-        decision = await answer_question(label, profile, llm, bank, cancel=token)
+        decision = await answer_question(
+            label, profile, llm, bank, cancel=token, saved_prefs=saved_prefs
+        )
     except CancelledError:
         raise
     except Exception as exc:  # noqa: BLE001

@@ -56,8 +56,14 @@ def main() -> None:
             layout = QVBoxLayout(root)
             layout.addWidget(
                 QLabel(
+                    "1. Import a resume  2. Verify every fact  3. Build documents  "
+                    "4. Fill the form  5. You click Submit  6. Record the application."
+                )
+            )
+            layout.addWidget(
+                QLabel(
                     "Local-first. The model never drives the browser. "
-                    "Auto-submit stays off until a site earns it."
+                    "Auto-submit stays off until a site earns it. The kill switch blocks it entirely."
                 )
             )
             self.resume = QLineEdit()
@@ -77,6 +83,10 @@ def main() -> None:
                 ("Verify facts", self._verify),
                 ("Build documents", self._docs),
                 ("Fill form", self._fill),
+                ("I submitted", self._record),
+                ("Applications", self._apps),
+                ("Kill switch on", self._kill),
+                ("Check this computer", self._doctor),
             ):
                 btn = QPushButton(title)
                 btn.clicked.connect(slot)
@@ -123,6 +133,25 @@ def main() -> None:
                     "headed": True,
                 }
             )
+
+        def _record(self) -> None:
+            self.bridge.run_cmd(
+                {
+                    "cmd": "applications.record",
+                    "url": self.url.text(),
+                    "company": "",
+                    "title": "",
+                }
+            )
+
+        def _apps(self) -> None:
+            self.bridge.run_cmd({"cmd": "applications"})
+
+        def _kill(self) -> None:
+            self.bridge.run_cmd({"cmd": "kill", "on": True})
+
+        def _doctor(self) -> None:
+            self.bridge.run_cmd({"cmd": "doctor"})
 
         def _on_result(self, text: str) -> None:
             self.log.appendPlainText(text)

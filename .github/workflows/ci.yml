@@ -4,7 +4,11 @@ on:
   pull_request:
 jobs:
   test:
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v4
@@ -12,7 +16,10 @@ jobs:
         with:
           python-version: "3.12"
       - run: uv sync --group dev
-      - run: uv run playwright install --with-deps chromium
+      - run: uv run playwright install chromium
+      - name: Install Playwright system libraries
+        if: runner.os == 'Linux'
+        run: uv run playwright install-deps chromium
       - run: uv run pytest -m "not live" -q
         env:
           QT_QPA_PLATFORM: offscreen

@@ -14,6 +14,34 @@ from autoapply.questions.engine import answer_question
 from autoapply.storage.answers import AnswerBank
 
 
+async def _prefill_signup_password(page: Page, state: Any) -> None:
+    import os
+    from urllib.parse import urlparse
+
+    from autoapply.secrets_store import generate_tenant_password, store_tenant_password
+
+    box = page.locator("#password")
+    if await box.count() == 0 or not await box.is_visible():
+        return
+    password = generate_tenant_password()
+    domain = (urlparse(page.url).hostname or "workday").lower()
+    if os.environ.get("PYTEST_CURRENT_TEST"):
+        await box.fill(password)
+        state.filled.append("password")
+        state.notes.append("Generated a signup password. Tests do not write the OS keychain.")
+        return
+    try:
+        store_tenant_password(domain, password)
+    except Exception:
+        state.notes.append(
+            "Could not store a generated password in the OS keychain; password left blank."
+        )
+        return
+    await box.fill(password)
+    state.filled.append("password")
+    state.notes.append(f"Generated a tenant password and stored it in the OS keychain for {domain}.")
+
+
 async def is_workday(page: Page) -> bool:
     return await page.locator("[data-automation-id]").count() > 0
 
@@ -35,7 +63,8 @@ async def fill_workday(
         if await email.count():
             await email.fill(profile.email, force=True)
             state.filled.append("email")
-        # Password is generated/stored by the OS keychain in a later hook; never sent to the LLM.
+        await _prefill_signup_password(page, state)
+        # The password never goes to the LLM. The user clicks Create Account.
         state.stopped_for_human = True
         state.notes.append(
             "Workday signup: email pre-filled. You click Create Account and the "

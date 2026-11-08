@@ -38,6 +38,7 @@ async def test_eval_set_escalates_sensitive_and_assessments(
             missed_escalation += 1
         if decision.unsupported:
             unsupported += 1
+    assert len(EVAL) >= 200
     assert missed_escalation == 0
     assert unsupported == 0
 

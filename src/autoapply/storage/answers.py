@@ -22,9 +22,12 @@ class AnswerBank:
     def get(self, question: str) -> AnswerBankRow | None:
         key = normalize_question(question)
         with Session(self.engine) as session:
-            return session.scalar(
+            row = session.scalar(
                 select(AnswerBankRow).where(AnswerBankRow.question_key == key)
             )
+            if row is not None:
+                session.expunge(row)
+            return row
 
     def put(
         self,

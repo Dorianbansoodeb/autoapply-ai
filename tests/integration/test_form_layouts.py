@@ -12,7 +12,7 @@ from autoapply.profile import CandidateProfile
 from test_sites.http import start_site
 
 SITES = Path(__file__).resolve().parents[2] / "test_sites"
-LAYOUTS = ["multipage", "iframe", "dropdown", "validation"]
+LAYOUTS = ["multipage", "iframe", "dropdown", "validation", "upload"]
 
 
 def _llm() -> MockLLMClient:

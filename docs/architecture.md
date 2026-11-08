@@ -1,32 +1,41 @@
-# Architecture (Milestone 0 slice)
+# Architecture
 
 The LLM is an untrusted parser and drafter. Deterministic code drives the
-browser. Milestone 0 proves three things on a local mock ATS:
-
-1. Schema-constrained calls to a local OpenAI-compatible endpoint (Ollama default).
-2. Playwright fills known fields from a verified profile.
-3. The agent **stops before Submit**.
+browser, checks eligibility, validates documents, and decides what may be
+filled. **You click Submit.** Mode C (earned auto-submit) is computed and
+logged; this build never sends a Submit click.
 
 ```
-CLI (argparse)
-   └── fill_application()
-         ├── URL allowlist (localhost only)
-         ├── BrowserManager (persistent headed Chromium)
-         ├── deterministic fill: name, email, dropdown, file
-         └── LLM client: free-text draft into FreeTextDraft schema
+GUI (PySide6) or CLI
+   │  JSON lines (engine process) or direct calls
+Engine
+   ├─ Profile store          atomic verified facts
+   ├─ Job intake             paste, or Greenhouse / Lever / Ashby public JSON
+   ├─ Eligibility            hard filters, then an LLM fit explanation
+   ├─ Document builder       select, light rewrite, fact validator, PDF + DOCX
+   ├─ Form engine            Playwright roles/labels, then a Workday adapter
+   ├─ Question engine        classify → answer bank / prefs → draft → flag
+   ├─ Policy gate            sensitivity, allowlist, kill switch, daily cap
+   └─ SQLite (WAL)           jobs, runs, applications, write-ahead action log
+LLM client → OpenAI-compatible localhost only (Ollama default)
 ```
 
-Not built yet: GUI, SQLite, policy registry UI, ATS adapters, document
-builder, question engine, auto-submit.
+## State
 
-## Cancellation
+Jobs move `new → eligible → documents_ready → in_progress → submitted_by_user`,
+or into `rejected`, `duplicate`, `expired`, `blocked_by_policy`, `uncertain`,
+or `closed`. A run left in `submitting` becomes `uncertain` on the next start
+and is not retried.
 
-A `CancelToken` is checked between steps. In-flight LLM calls close the HTTP
-stream. Submit is never clicked, so there is no cancel-and-retry across a
-submit.
+## What the model is allowed to see
 
-## Untrusted web content
+Only the facts retrieved for that question or document, wrapped as untrusted
+data when the text came from a page or job posting. Passwords, cookies, and
+the full profile are not sent. Secrets are written by the executor into the
+browser at fill time.
 
-Only the accessible name of the free-text question is sent to the model,
-wrapped as untrusted data. Page HTML, hidden fields, and password inputs are
-not.
+## Schema changes
+
+`storage/schema.py` creates tables with SQLAlchemy and adds missing columns
+in place. That is the migration path for this release. Use Alembic before the
+first breaking schema change.
